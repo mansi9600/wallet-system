@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.mansi.wallet_system.dto.TransferRequest;
 
 @RestController
 @RequestMapping("/wallets")
@@ -22,5 +23,14 @@ public class WalletController {
     @GetMapping
     public List<Wallet> getAllWallets() {
         return walletService.getAllWallets();
+    }
+    @PostMapping("/transfer")
+    public String transferMoney(@RequestBody TransferRequest request) {
+
+        return walletService.transferMoney(
+                request.getSenderWalletId(),
+                request.getReceiverWalletId(),
+                request.getAmount()
+        );
     }
 }

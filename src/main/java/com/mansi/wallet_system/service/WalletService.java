@@ -20,4 +20,24 @@ public class WalletService {
     public List<Wallet> getAllWallets() {
         return walletRepository.findAll();
     }
+    public String transferMoney(Long senderId, Long receiverId, Double amount) {
+
+        Wallet sender = walletRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender wallet not found"));
+
+        Wallet receiver = walletRepository.findById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Receiver wallet not found"));
+
+        if (sender.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance");
+        }
+
+        sender.setBalance(sender.getBalance() - amount);
+        receiver.setBalance(receiver.getBalance() + amount);
+
+        walletRepository.save(sender);
+        walletRepository.save(receiver);
+
+        return "Transfer Successful";
+    }
 }
