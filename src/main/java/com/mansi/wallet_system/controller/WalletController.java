@@ -20,10 +20,18 @@ public class WalletController {
         return walletService.createWallet(wallet);
     }
 
+
+
     @GetMapping
     public List<Wallet> getAllWallets() {
         return walletService.getAllWallets();
     }
+    @GetMapping("/{id}")
+    public Wallet getWalletById(@PathVariable Long id) {
+        return walletService.getWalletById(id);
+    }
+
+
     @PostMapping("/transfer")
     public String transferMoney(@RequestBody TransferRequest request) {
 

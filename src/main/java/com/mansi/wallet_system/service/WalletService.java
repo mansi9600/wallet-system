@@ -1,12 +1,15 @@
 package com.mansi.wallet_system.service;
 
+import com.mansi.wallet_system.entity.Transaction;
 import com.mansi.wallet_system.entity.Wallet;
+import com.mansi.wallet_system.repository.TransactionRepository;
 import com.mansi.wallet_system.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -14,6 +17,9 @@ public class WalletService {
 
     @Autowired
     private WalletRepository walletRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     public Wallet createWallet(Wallet wallet) {
         return walletRepository.save(wallet);
@@ -51,6 +57,16 @@ public class WalletService {
 
         walletRepository.save(sender);
         walletRepository.save(receiver);
+
+        // Save transaction automatically
+        Transaction transaction = new Transaction();
+        transaction.setFromWalletId(senderId);
+        transaction.setToWalletId(receiverId);
+        transaction.setAmount(amount);
+        transaction.setStatus("SUCCESS");
+        transaction.setTransactionTime(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
 
         return "Transfer Successful";
     }
