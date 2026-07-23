@@ -3,6 +3,8 @@ package com.mansi.wallet_system.service;
 import com.mansi.wallet_system.entity.Wallet;
 import com.mansi.wallet_system.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +22,18 @@ public class WalletService {
     public List<Wallet> getAllWallets() {
         return walletRepository.findAll();
     }
+
+    @Cacheable(value = "wallets", key = "#id")
+    public Wallet getWalletById(Long id) {
+        return walletRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+    }
+
+    @CacheEvict(value = "wallets", key = "#wallet.id")
+    public Wallet updateWallet(Wallet wallet) {
+        return walletRepository.save(wallet);
+    }
+
     public String transferMoney(Long senderId, Long receiverId, Double amount) {
 
         Wallet sender = walletRepository.findById(senderId)
