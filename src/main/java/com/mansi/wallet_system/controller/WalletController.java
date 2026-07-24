@@ -7,18 +7,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import com.mansi.wallet_system.dto.TransferRequest;
-
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/wallets")
 public class WalletController {
 
     @Autowired
     private WalletService walletService;
-
     @PostMapping
-    public Wallet createWallet(@RequestBody Wallet wallet) {
+    public Wallet createWallet(@Valid @RequestBody Wallet wallet) {
         return walletService.createWallet(wallet);
     }
+
+
 
 
 
@@ -33,7 +34,7 @@ public class WalletController {
 
 
     @PostMapping("/transfer")
-    public String transferMoney(@RequestBody TransferRequest request) {
+    public String transferMoney(@Valid @RequestBody TransferRequest request) {
 
         return walletService.transferMoney(
                 request.getSenderWalletId(),
