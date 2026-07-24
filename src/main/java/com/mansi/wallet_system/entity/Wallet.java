@@ -29,4 +29,19 @@ public class Wallet {
     public void setBalance(Double balance) {
         this.balance = balance;
     }
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
