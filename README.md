@@ -88,6 +88,9 @@ Available APIs:
 - Money Transfer API
 - Swagger API Documentation
 
+## Update
+- Updated Swagger configuration and API testing.
+
 ### In Progress
 - JWT Authentication
 - Double Entry Ledger
@@ -98,7 +101,7 @@ Available APIs:
 
 ## 👩‍💻 Project Team
 
-**Team Lead & Backend Developer:** Mansi Gupta
+**Backend Developer:** Mansi Gupta
 
 **Frontend Developer:** Akash
 
