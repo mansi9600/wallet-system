@@ -1,5 +1,6 @@
 package com.mansi.wallet_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,17 +13,27 @@ public class User {
 
     private String name;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
+    private String password;
+
     private Double balance;
+
+    private String role = "USER";
 
     public User() {
     }
 
-    public User(String name, String email, Double balance) {
+    public User(String name, String email, String password,
+                Double balance, String role) {
         this.name = name;
         this.email = email;
+        this.password = password;
         this.balance = balance;
+        this.role = role;
     }
 
     public Long getId() {
@@ -49,11 +60,27 @@ public class User {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Double getBalance() {
         return balance;
     }
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
