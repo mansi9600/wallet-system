@@ -20,8 +20,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/users/**",
                                 "/auth/**",
                                 "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
                                 "/api-docs/**"
                         ).permitAll()
                         .anyRequest().authenticated()
@@ -32,12 +35,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
             throws Exception {
         return configuration.getAuthenticationManager();
     }
