@@ -1,0 +1,74 @@
+package com.mansi.wallet_system.service;
+
+import com.mansi.wallet_system.entity.Wallet;
+import com.mansi.wallet_system.repository.TransactionRepository;
+import com.mansi.wallet_system.repository.WalletRepository;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class WalletServiceTest {
+
+    @Mock
+    private WalletRepository walletRepository;
+
+    @Mock
+    private TransactionRepository transactionRepository;
+
+    @InjectMocks
+    private WalletService walletService;
+
+    public WalletServiceTest() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void transferMoney_success() {
+
+        Wallet sender = new Wallet();
+        sender.setId(1L);
+        sender.setBalance(1000.0);
+
+        Wallet receiver = new Wallet();
+        receiver.setId(2L);
+        receiver.setBalance(500.0);
+
+        when(walletRepository.findById(1L)).thenReturn(Optional.of(sender));
+        when(walletRepository.findById(2L)).thenReturn(Optional.of(receiver));
+
+        String result = walletService.transferMoney(1L, 2L, 200.0);
+
+        assertEquals("Transfer Successful", result);
+        assertEquals(800.0, sender.getBalance());
+        assertEquals(700.0, receiver.getBalance());
+
+        verify(walletRepository, times(1)).save(sender);
+        verify(walletRepository, times(1)).save(receiver);
+    }
+
+    @Test
+    void transferMoney_insufficientBalance() {
+
+        Wallet sender = new Wallet();
+        sender.setId(1L);
+        sender.setBalance(100.0);
+
+        Wallet receiver = new Wallet();
+        receiver.setId(2L);
+        receiver.setBalance(500.0);
+
+        when(walletRepository.findById(1L)).thenReturn(Optional.of(sender));
+        when(walletRepository.findById(2L)).thenReturn(Optional.of(receiver));
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> walletService.transferMoney(1L, 2L, 200.0));
+
+        assertEquals("Insufficient balance", exception.getMessage());
+    }
+}
