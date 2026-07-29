@@ -39,10 +39,20 @@ public class WalletService {
     @CacheEvict(value = "wallets", key = "#wallet.id")
     public Wallet updateWallet(Wallet wallet) {
         return walletRepository.save(wallet);
+
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = RuntimeException.class)
     public String transferMoney(Long senderId, Long receiverId, Double amount) {
+
+        Transaction transaction = new Transaction();
+        transaction.setFromWalletId(senderId);
+        transaction.setToWalletId(receiverId);
+        transaction.setAmount(amount);
+        transaction.setStatus("PENDING");
+        transaction.setTransactionTime(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
 
         Wallet sender = walletRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender wallet not found"));
@@ -51,6 +61,8 @@ public class WalletService {
                 .orElseThrow(() -> new RuntimeException("Receiver wallet not found"));
 
         if (sender.getBalance() < amount) {
+            transaction.setStatus("FAILED");
+            transactionRepository.save(transaction);
             throw new RuntimeException("Insufficient balance");
         }
 
@@ -60,13 +72,7 @@ public class WalletService {
         walletRepository.save(sender);
         walletRepository.save(receiver);
 
-        Transaction transaction = new Transaction();
-        transaction.setFromWalletId(senderId);
-        transaction.setToWalletId(receiverId);
-        transaction.setAmount(amount);
         transaction.setStatus("SUCCESS");
-        transaction.setTransactionTime(LocalDateTime.now());
-
         transactionRepository.save(transaction);
 
         return "Transfer Successful";
