@@ -1,10 +1,7 @@
 # wallet-system
 
-# Core Payment Ledger & Wallet System
+A secure digital wallet backend application built using **Spring Boot**, **PostgreSQL**, **Redis**, and **JWT Authentication**.
 
-A secure digital wallet system built using **Spring Boot**, **PostgreSQL**, **Redis**, and **React**. The application enables users to manage wallets, transfer money securely, and maintain transaction records with REST APIs documented using Swagger.
-
----
 
 ## 👥 Team
 
@@ -14,94 +11,125 @@ A secure digital wallet system built using **Spring Boot**, **PostgreSQL**, **Re
 | **Akash** | Frontend Developer | React UI Development, Frontend Integration, User Interface Design |
 
 ---
+## Features
 
-## 🚀 Tech Stack
+- User Registration & Login
+- JWT-based Authentication
+- Wallet Creation
+- Balance Inquiry
+- Money Transfer between Wallets
+- Transaction History
+- Redis Idempotency (prevents duplicate transfers)
+- Pessimistic Locking for concurrent transfers
+- Unit & Integration Tests
+- Swagger/OpenAPI Documentation
+
+## Tech Stack
 
 - Java 17
-- Spring Boot
+- Spring Boot 3
 - Spring Security
 - Spring Data JPA
 - PostgreSQL
 - Redis
-- Redisson
-- JWT Authentication
-- SpringDoc OpenAPI (Swagger)
-- React
 - Maven
+- Swagger (Springdoc OpenAPI)
+- JUnit 5 & Mockito
 
----
+## Project Structure
 
-## ✨ Features
-
-- User Management
-- Wallet Management
-- Deposit & Withdraw Operations
-- Peer-to-Peer Money Transfer
-- Transaction History
-- Redis Caching
-- Input Validation
-- Global Exception Handling
-- REST APIs
-- Interactive Swagger API Documentation
-
----
-
-## 📖 API Documentation
-
-### Swagger UI
+```text
+src/main/java/com/mansi/wallet_system
+ ├── controller
+ ├── service
+ ├── repository
+ ├── entity
+ ├── dto
+ ├── security
+ └── exception
 ```
+
+## API Endpoints
+
+### User APIs
+
+- `POST /users` - Create user
+- `GET /users` - Get all users
+
+### Wallet APIs
+
+- `POST /wallets` - Create wallet
+- `GET /wallets` - Get all wallets
+- `GET /wallets/{id}` - Get wallet by id
+- `POST /wallets/transfer` - Transfer money
+
+### Transaction APIs
+
+- `GET /transactions` - Get all transactions
+
+## Swagger UI
+
+After running the application:
+
+```text
 http://localhost:8082/swagger-ui/index.html
 ```
 
-### OpenAPI JSON
+## Running the Application
+
+```bash
+mvn clean install
+mvn spring-boot:run
 ```
-http://localhost:8082/api-docs
+
+## Database Configuration
+
+Update `src/main/resources/application.properties`:
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/wallet_db
+spring.datasource.username=postgres
+spring.datasource.password=your_password
 ```
 
-Available APIs:
-- User APIs
-- Wallet APIs
-- Transaction APIs
-- Money Transfer APIs
+## Redis Configuration
 
----
+Make sure Redis server is running on:
 
-## 🛠 Database
+```text
+localhost:6379
+```
 
-- PostgreSQL
-- Hibernate (JPA)
-- Automatic Schema Update
+## Idempotency Example
 
----
+Send header:
 
-## 📌 Project Status
+```text
+Idempotency-Key: tx-12345
+```
 
-🚧 Project is under active development.
+Sending the same request again returns:
 
-### Completed
-- Spring Boot Project Setup
-- PostgreSQL Integration
-- Redis Integration
-- User CRUD APIs
-- Wallet CRUD APIs
-- Transaction CRUD APIs
-- Money Transfer API
-- Swagger API Documentation
+```text
+Duplicate request ignored
+```
 
-## Update
-- Updated Swagger configuration and API testing.
+## Testing
 
-### In Progress
-- JWT Authentication
-- Double Entry Ledger
-- Redis Idempotency
-- JMeter Performance Testing
+Run tests using:
 
----
+```bash
+mvn test
+```
 
-## 👩‍💻 Project Team
+Implemented tests:
+
+- WalletServiceTest
+- WalletControllerIntegrationTest
+
+## Author
 
 **Backend Developer:** Mansi Gupta
 
-**Frontend Developer:** Akash
+
 
