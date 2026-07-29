@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,7 @@ public class WalletService {
         return walletRepository.save(wallet);
     }
 
+    @Transactional
     public String transferMoney(Long senderId, Long receiverId, Double amount) {
 
         Wallet sender = walletRepository.findById(senderId)
@@ -58,7 +60,6 @@ public class WalletService {
         walletRepository.save(sender);
         walletRepository.save(receiver);
 
-        // Save transaction automatically
         Transaction transaction = new Transaction();
         transaction.setFromWalletId(senderId);
         transaction.setToWalletId(receiverId);
