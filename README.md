@@ -121,6 +121,17 @@ Run tests using:
 ```bash
 mvn test
 ```
+## Run with Docker
+
+```bash
+docker compose up --build
+```
+
+Services:
+
+- App → http://localhost:8082
+- PostgreSQL → localhost:5432
+- Redis → localhost:6379
 
 Implemented tests:
 
