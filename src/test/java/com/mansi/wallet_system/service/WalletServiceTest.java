@@ -46,6 +46,6 @@ class WalletServiceTest {
         assertEquals(3000.0, receiver.getBalance());
 
         verify(walletRepository, times(2)).save(any(Wallet.class));
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        verify(transactionRepository, times(2)).save(any(Transaction.class));
     }
 }
