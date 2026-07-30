@@ -3,6 +3,10 @@ package com.mansi.wallet_system.service;
 import com.mansi.wallet_system.entity.Transaction;
 import com.mansi.wallet_system.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +27,19 @@ public class TransactionService {
         return transactionRepository.findAll();
     }
 
-    public List<Transaction> getTransactionsByWalletId(Long walletId) {
-        return transactionRepository.findByFromWalletIdOrToWalletId(walletId, walletId);
+    // Pagination + Sorting
+    public Page<Transaction> getTransactionsByWalletId(Long walletId, int page, int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("transactionTime").descending()
+        );
+
+        return transactionRepository.findByFromWalletIdOrToWalletId(
+                walletId,
+                walletId,
+                pageable
+        );
     }
 }
