@@ -126,6 +126,15 @@ mvn test
 ```bash
 docker compose up --build
 ```
+## Docker Setup
+
+Run application with Docker:
+
+```bash
+docker compose up --build
+```
+
+
 
 Services:
 
