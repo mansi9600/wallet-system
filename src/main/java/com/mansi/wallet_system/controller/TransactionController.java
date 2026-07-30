@@ -3,6 +3,7 @@ package com.mansi.wallet_system.controller;
 import com.mansi.wallet_system.entity.Transaction;
 import com.mansi.wallet_system.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +25,13 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
+    // Pagination API
     @GetMapping("/{walletId}")
-    public List<Transaction> getTransactionsByWalletId(@PathVariable Long walletId) {
-        return transactionService.getTransactionsByWalletId(walletId);
+    public Page<Transaction> getTransactionsByWalletId(
+            @PathVariable Long walletId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        return transactionService.getTransactionsByWalletId(walletId, page, size);
     }
 }
