@@ -4,9 +4,7 @@ import com.mansi.wallet_system.entity.Transaction;
 import com.mansi.wallet_system.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,23 +21,20 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    // Pagination support
+    public Page<Transaction> getAllTransactions(Pageable pageable) {
+        return transactionRepository.findAll(pageable);
     }
 
-    // Pagination + Sorting
-    public Page<Transaction> getTransactionsByWalletId(Long walletId, int page, int size) {
+    // Wallet wise transactions
+    public List<Transaction> getTransactionsByWalletId(Long walletId) {
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("transactionTime").descending()
-        );
-
-        return transactionRepository.findByFromWalletIdOrToWalletId(
-                walletId,
-                walletId,
-                pageable
-        );
+        return transactionRepository
+                .findByFromWalletIdOrToWalletId(
+                        walletId,
+                        walletId,
+                        org.springframework.data.domain.Pageable.unpaged()
+                )
+                .getContent();
     }
 }
