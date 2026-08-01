@@ -65,7 +65,6 @@ public class WalletController {
             String idempotencyKey,
             @Valid @RequestBody TransferRequest request) {
 
-        // Prevent duplicate requests
         if (idempotencyService.isDuplicate(idempotencyKey)) {
             return new ApiResponse<>(
                     true,
@@ -86,4 +85,5 @@ public class WalletController {
                 result
         );
     }
+
 }
