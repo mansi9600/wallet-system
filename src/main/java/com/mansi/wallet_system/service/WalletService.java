@@ -9,13 +9,15 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class WalletService {
-
+    private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
     @Autowired
     private WalletRepository walletRepository;
 
@@ -43,39 +45,45 @@ public class WalletService {
     }
 
     @Transactional(noRollbackFor = RuntimeException.class)
-    public String transferMoney(Long senderId, Long receiverId, Double amount) {
+    public Transaction transferMoney(Long fromWalletId, Long toWalletId, Double amount) {
 
-        Transaction transaction = new Transaction();
-        transaction.setFromWalletId(senderId);
-        transaction.setToWalletId(receiverId);
-        transaction.setAmount(amount);
-        transaction.setStatus("PENDING");
-        transaction.setTransactionTime(LocalDateTime.now());
+        // Transfer start log
+        logger.info("Transfer started: fromWallet={}, toWallet={}, amount={}",
+                fromWalletId, toWalletId, amount);
 
-        transactionRepository.save(transaction);
-
-        Wallet sender = walletRepository.findById(senderId)
+        Wallet fromWallet = walletRepository.findById(fromWalletId)
                 .orElseThrow(() -> new RuntimeException("Sender wallet not found"));
 
-        Wallet receiver = walletRepository.findById(receiverId)
+        Wallet toWallet = walletRepository.findById(toWalletId)
                 .orElseThrow(() -> new RuntimeException("Receiver wallet not found"));
 
-        if (sender.getBalance() < amount) {
-            transaction.setStatus("FAILED");
-            transactionRepository.save(transaction);
+        if (fromWallet.getBalance() < amount) {
+
+            // Transfer failed log
+            logger.warn("Transfer failed: fromWallet={}, toWallet={}, amount={}, reason=Insufficient balance",
+                    fromWalletId, toWalletId, amount);
+
             throw new RuntimeException("Insufficient balance");
         }
 
-        sender.setBalance(sender.getBalance() - amount);
-        receiver.setBalance(receiver.getBalance() + amount);
+        fromWallet.setBalance(fromWallet.getBalance() - amount);
+        toWallet.setBalance(toWallet.getBalance() + amount);
 
-        walletRepository.save(sender);
-        walletRepository.save(receiver);
+        walletRepository.save(fromWallet);
+        walletRepository.save(toWallet);
 
+        Transaction transaction = new Transaction();
+        transaction.setFromWalletId(fromWalletId);
+        transaction.setToWalletId(toWalletId);
+        transaction.setAmount(amount);
         transaction.setStatus("SUCCESS");
-        transactionRepository.save(transaction);
 
-        return "Transfer Successful";
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // Transfer success log
+        logger.info("Transfer successful: fromWallet={}, toWallet={}, amount={}",
+                fromWalletId, toWalletId, amount);
+
+        return savedTransaction;
     }
-
 }

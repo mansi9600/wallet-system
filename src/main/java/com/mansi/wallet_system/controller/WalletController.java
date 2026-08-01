@@ -1,6 +1,8 @@
 package com.mansi.wallet_system.controller;
 
+import com.mansi.wallet_system.dto.ApiResponse;
 import com.mansi.wallet_system.dto.TransferRequest;
+import com.mansi.wallet_system.entity.Transaction;
 import com.mansi.wallet_system.entity.Wallet;
 import com.mansi.wallet_system.service.IdempotencyService;
 import com.mansi.wallet_system.service.WalletService;
@@ -20,35 +22,68 @@ public class WalletController {
     @Autowired
     private IdempotencyService idempotencyService;
 
+    // Create wallet
     @PostMapping
-    public Wallet createWallet(@Valid @RequestBody Wallet wallet) {
-        return walletService.createWallet(wallet);
+    public ApiResponse<Wallet> createWallet(@Valid @RequestBody Wallet wallet) {
+        Wallet savedWallet = walletService.createWallet(wallet);
+
+        return new ApiResponse<>(
+                true,
+                "Wallet created successfully",
+                savedWallet
+        );
     }
 
+    // Get all wallets
     @GetMapping
-    public List<Wallet> getAllWallets() {
-        return walletService.getAllWallets();
+    public ApiResponse<List<Wallet>> getAllWallets() {
+        List<Wallet> wallets = walletService.getAllWallets();
+
+        return new ApiResponse<>(
+                true,
+                "Wallets fetched successfully",
+                wallets
+        );
     }
 
+    // Get wallet by id
     @GetMapping("/{id}")
-    public Wallet getWalletById(@PathVariable Long id) {
-        return walletService.getWalletById(id);
+    public ApiResponse<Wallet> getWalletById(@PathVariable Long id) {
+        Wallet wallet = walletService.getWalletById(id);
+
+        return new ApiResponse<>(
+                true,
+                "Wallet fetched successfully",
+                wallet
+        );
     }
 
+    // Transfer money
     @PostMapping("/transfer")
-    public String transferMoney(
+    public ApiResponse<Transaction> transferMoney(
             @RequestHeader(value = "Idempotency-Key", required = true)
             String idempotencyKey,
             @Valid @RequestBody TransferRequest request) {
 
+        // Prevent duplicate requests
         if (idempotencyService.isDuplicate(idempotencyKey)) {
-            return "Duplicate request ignored";
+            return new ApiResponse<>(
+                    true,
+                    "Duplicate request ignored",
+                    null
+            );
         }
 
-        return walletService.transferMoney(
+        Transaction result = walletService.transferMoney(
                 request.getSenderWalletId(),
                 request.getReceiverWalletId(),
                 request.getAmount()
+        );
+
+        return new ApiResponse<>(
+                true,
+                "Transfer completed successfully",
+                result
         );
     }
 }
