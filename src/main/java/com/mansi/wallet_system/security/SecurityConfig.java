@@ -1,5 +1,6 @@
 package com.mansi.wallet_system.security;
 
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
+                        // 👇 Ye line yahan add karni hai
+                        .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -26,6 +31,7 @@ public class SecurityConfig {
                                 "/transactions/**",
                                 "/auth/**"
                         ).permitAll()
+
                         .anyRequest().permitAll()
                 );
 
