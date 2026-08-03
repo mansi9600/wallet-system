@@ -30,19 +30,29 @@ export function AuthProvider({ children }) {
       setLoading(false)
     }
   }
-
   async function register(name, email, password) {
     setLoading(true)
     try {
-      const { data } = await api.post('/auth/register', { name, email, password })
-      localStorage.setItem('wallet_token', data.token)
-      const registeredUser = { userId: data.userId, name: data.name, email: data.email, role: data.role }
-      setUser(registeredUser)
-      return registeredUser
-    } finally {
-      setLoading(false)
+    const { data } = await api.post('/users', {
+      name,
+      email,
+      balance: 0
+    })
+
+    const registeredUser = {
+      userId: data.id,
+      name: data.name,
+      email: data.email,
+      role: 'USER'
     }
+
+    setUser(registeredUser)
+    return registeredUser
+  } finally {
+    setLoading(false)
   }
+}
+
 
   function logout() {
     localStorage.removeItem('wallet_token')
