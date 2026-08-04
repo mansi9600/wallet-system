@@ -1,11 +1,10 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://localhost:8082',
   headers: { 'Content-Type': 'application/json' }
 })
 
-// Attach JWT to every outgoing request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('wallet_token')
   if (token) {
@@ -14,7 +13,6 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Auto-logout on 401 (expired/invalid token)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -28,3 +26,4 @@ api.interceptors.response.use(
 )
 
 export default api
+
