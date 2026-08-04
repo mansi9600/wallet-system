@@ -1,37 +1,35 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Navbar() {
-  const { user, logout, isAdmin } = useAuth()
-  const navigate = useNavigate()
-
-  function handleLogout() {
-    logout()
-    navigate('/login')
-  }
+  const { user, logout } = useAuth()
 
   return (
-    <nav className="bg-brand-900 text-white px-6 py-4 flex items-center justify-between shadow-md">
-      <Link to="/dashboard" className="text-lg font-semibold tracking-tight">
-        Wallet<span className="text-brand-100">Ledger</span>
-      </Link>
+    <header className="navbar">
+      <div className="navbar__inner">
 
-      {user && (
-        <div className="flex items-center gap-6 text-sm">
-          <Link to="/dashboard" className="hover:text-brand-100">Dashboard</Link>
-          <Link to="/wallet" className="hover:text-brand-100">Wallet</Link>
-          <Link to="/transfer" className="hover:text-brand-100">Transfer</Link>
-          <Link to="/history" className="hover:text-brand-100">History</Link>
-          {isAdmin && <Link to="/admin" className="hover:text-brand-100">Admin</Link>}
-          <span className="text-brand-100">{user.name}</span>
-          <button
-            onClick={handleLogout}
-            className="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md transition"
-          >
+        <Link to="/dashboard" className="navbar__brand">
+          WalletLedger
+        </Link>
+
+        <nav className="navbar__links">
+          <Link to="/dashboard" className="navbar__link">Dashboard</Link>
+          <Link to="/wallet" className="navbar__link">Wallet</Link>
+          <Link to="/transfer" className="navbar__link">Transfer</Link>
+          <Link to="/history" className="navbar__link">History</Link>
+        </nav>
+
+        <div className="navbar__user">
+          <span className="navbar__name">
+            {user?.name || 'User'}
+          </span>
+
+          <button onClick={logout} className="navbar__logout">
             Logout
           </button>
         </div>
-      )}
-    </nav>
+
+      </div>
+    </header>
   )
 }
