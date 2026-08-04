@@ -1,6 +1,3 @@
-
-
-
 @import './styles/variables.css';
 @import './styles/base.css';
 @import './styles/components.css';
@@ -9,7 +6,56 @@
 @import './styles/dashboard.css';
 @import './styles/responsive.css';
 
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  min-height: 100%;
+}
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0b1020;
+  color: #f8fafc;
+  line-height: 1.5;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons */
+button {
+  font: inherit;
+  cursor: pointer;
+  border: none;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  font: inherit;
+  outline: none;
+}
+
+/* Smooth rendering */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Utility container */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }

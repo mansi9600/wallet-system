@@ -7,10 +7,28 @@ export default function TransactionHistory() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    api.get('/ledger/history')
-      .then((res) => setEntries(res.data))
-      .catch(() => setError('Failed to load transaction history'))
-      .finally(() => setLoading(false))
+    async function loadTransactions() {
+      try {
+        const res = await api.get(
+          '/transactions?page=0&size=10&sort=id,desc'
+        )
+
+        const transactions =
+          res.data?.data?.content ||
+          res.data?.content ||
+          res.data?.data ||
+          []
+
+        setEntries(transactions)
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load transaction history')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadTransactions()
   }, [])
 
   return (
