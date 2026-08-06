@@ -1,159 +1,105 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axiosInstance'
-import { useAuth } from '../context/AuthContext.jsx'
-import '../styles/dashboard.css'
 
 export default function Dashboard() {
-  const { user } = useAuth()
   const [wallet, setWallet] = useState(null)
-  const [recent, setRecent] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [walletRes, historyRes] = await Promise.all([
-          api.get('/wallets'),
-          api.get('/transactions')
-        ])
-
-        const wallets = walletRes.data.data || []
-        const walletData =
-          wallets.find(
-            (w) =>
-              w.ownerName &&
-              user?.name &&
-              w.ownerName.toLowerCase() === user.name.split(' ')[0].toLowerCase()
-          ) || wallets[0]
-
-        setWallet(walletData)
-
-        const transactions = historyRes.data.data || historyRes.data || []
-        setRecent(Array.isArray(transactions) ? transactions.slice(0, 5) : [])
-      } catch (err) {
-        console.error(err)
+        const res = await api.get('/wallets')
+        const wallets = res.data?.data || []
+        setWallet(wallets[wallets.length - 1])
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setLoading(false)
       }
     }
 
     load()
-  }, [user])
+  }, [])
 
   return (
-    <div className="dashboard-page">
-
-      <div className="dashboard-header">
-        <h1>Welcome back, {user?.name?.split(' ')[0]} 👋</h1>
-        <p>Monitor balances, transfer funds, and track transactions in real time.</p>
+    <div className="dashboard-shell">
+      <div className="dashboard-hero">
+        <div>
+          <h1 className="dashboard-title">Welcome back, Mansi 👋</h1>
+          <p className="dashboard-subtitle">
+            Monitor balances, transfer funds, and track transactions in real time.
+          </p>
+        </div>
       </div>
 
-      <div className="dashboard-top">
-
+      <div className="dashboard-grid">
         <div className="balance-card">
           <div className="balance-card__label">Available Balance</div>
 
           <div className="balance-card__amount">
-            ₹{Number(wallet?.balance ?? 0).toLocaleString('en-IN')}
+            {loading
+              ? 'Loading...'
+              : `₹${Number(wallet?.balance || 0).toLocaleString('en-IN')}`}
           </div>
 
           <div className="balance-card__meta">
-            <span>{wallet?.status ?? 'ACTIVE'}</span>
-            <span>Wallet ID #{wallet?.id ?? '--'}</span>
+            <span className="wallet-chip wallet-chip--active">ACTIVE</span>
+            <span className="wallet-chip">Wallet ID #{wallet?.id}</span>
           </div>
 
-          <div className="modern-actions" style={{marginTop: '24px'}}>
-            <Link to="/transfer">Send Money</Link>
-            <Link to="/history">View History</Link>
+          <div className="balance-card__actions">
+            <Link to="/transfer" className="dashboard-btn dashboard-btn--primary">
+              Send Money
+            </Link>
+
+            <Link to="/history" className="dashboard-btn dashboard-btn--secondary">
+              View History
+            </Link>
           </div>
         </div>
 
-        <div className="stats-card">
-          <div className="stats-card__item">
-            <small>This Month</small>
-            <strong>+12%</strong>
+        <div className="stats-panel">
+          <div className="stat-card">
+            <span className="stat-card__label">This Month</span>
+            <span className="stat-card__value stat-card__value--positive">+12%</span>
           </div>
 
-          <div className="stats-card__item">
-            <small>Credits</small>
-            <strong>₹12,500</strong>
+          <div className="stat-card">
+            <span className="stat-card__label">Credits</span>
+            <span className="stat-card__value">₹12,500</span>
           </div>
 
-          <div className="stats-card__item">
-            <small>Debits</small>
-            <strong>₹6,850</strong>
+          <div className="stat-card">
+            <span className="stat-card__label">Debits</span>
+            <span className="stat-card__value">₹6,850</span>
           </div>
 
-          <div className="stats-card__item">
-            <small>Net Flow</small>
-            <strong>₹5,650</strong>
+          <div className="stat-card">
+            <span className="stat-card__label">Net Flow</span>
+            <span className="stat-card__value">₹5,650</span>
           </div>
         </div>
       </div>
 
-      <div className="action-grid">
-
-        <Link to="/transfer" className="action-card">
-          <div className="action-card__icon">💸</div>
+      <div className="feature-grid">
+        <Link to="/transfer" className="feature-card">
+          <div className="feature-card__icon">💸</div>
           <h3>Transfer Money</h3>
           <p>Instantly send money to another wallet.</p>
         </Link>
 
-        <Link to="/history" className="action-card">
-          <div className="action-card__icon">📜</div>
+        <Link to="/history" className="feature-card">
+          <div className="feature-card__icon">📜</div>
           <h3>Transaction History</h3>
           <p>Review all credits and debits.</p>
         </Link>
 
-        <div className="action-card">
-          <div className="action-card__icon">🔒</div>
+        <Link to="/wallet" className="feature-card">
+          <div className="feature-card__icon">🔒</div>
           <h3>Security</h3>
           <p>JWT authentication and protected APIs enabled.</p>
-        </div>
-      </div>
-
-      <div className="tx-section">
-
-        <div className="tx-section__header">
-          <h2>Recent Transactions</h2>
-          <Link to="/history">View all →</Link>
-        </div>
-
-        {recent.length === 0 ? (
-          <div className="tx-empty">
-            <div className="tx-empty__icon">🧾</div>
-            <p>No transactions yet</p>
-            <span>Your latest wallet activity will appear here.</span>
-          </div>
-        ) : (
-          <ul className="tx-list">
-            {recent.map((entry) => (
-              <li key={entry.id} className="tx-list__item">
-
-                <div>
-                  <div className="tx-list__desc">
-                    {entry.description || 'Wallet transaction'}
-                  </div>
-
-                  <div className="tx-list__date">
-                    {entry.createdAt
-                      ? new Date(entry.createdAt).toLocaleDateString()
-                      : 'Today'}
-                  </div>
-                </div>
-
-                <div
-                  className={`tx-list__amount ${
-                    entry.entryType === 'CREDIT'
-                      ? 'tx-list__amount--credit'
-                      : 'tx-list__amount--debit'
-                  }`}
-                >
-                  {entry.entryType === 'CREDIT' ? '+' : '-'}₹
-                  {Number(entry.amount ?? 0).toLocaleString('en-IN')}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        </Link>
       </div>
     </div>
   )
