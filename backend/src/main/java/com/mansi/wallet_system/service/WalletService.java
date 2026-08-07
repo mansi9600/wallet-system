@@ -56,6 +56,13 @@ public class WalletService {
         return walletRepository.save(wallet);
     }
 
+    public com.mansi.wallet_system.dto.WalletSummaryDTO getWalletSummaryByUserId(Long userId) {
+        Wallet wallet = getWalletByUserId(userId);
+        BigDecimal totalReceived = ledgerEntryRepository.getTotalAmountByTypeAndWalletId(wallet.getId(), "CREDIT");
+        BigDecimal totalSent = ledgerEntryRepository.getTotalAmountByTypeAndWalletId(wallet.getId(), "DEBIT");
+        return new com.mansi.wallet_system.dto.WalletSummaryDTO(wallet, totalReceived, totalSent);
+    }
+
     @Transactional
     public Transaction transferMoney(Long fromWalletId, Long toWalletId, BigDecimal amount, String idempotencyKey) {
 

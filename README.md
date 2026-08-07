@@ -16,9 +16,10 @@ An enterprise-grade, secure digital wallet application featuring a **Spring Boot
 ## 🌟 Key Features
 
 - **Double-Entry Ledger**: Implemented inside `WalletService` using transactional SQL locking to guarantee that money is never created or destroyed, only credited and debited.
+- **Dashboard Ledger Aggregation**: "Total Sent" and "Total Received" statistics are calculated on the backend via PostgreSQL JPQL queries for 100% accuracy.
 - **Idempotency (Double-Charge Prevention)**: The backend physically rejects duplicate transfer attempts caused by network drops by validating a unique `Idempotency-Key` at the PostgreSQL schema level.
 - **Role-Based Authentication**: Secure JWT-based auth separating standard Users from Admins.
-- **Modern React Dashboard**: Real-time balance and transaction history viewing with a beautiful, professional UI.
+- **Modern React Dashboard**: Real-time balance, transaction history, and dynamic flow charts using `Recharts`.
 - **Pessimistic Locking**: Prevents race conditions and deadlocks when executing concurrent transfers between wallets.
 
 ---

@@ -16,16 +16,14 @@ export default function Dashboard() {
     async function fetchData() {
       try {
         if (!user || !user.userId) return;
-        const balRes = await api.get(`/wallets/user/${user.userId}`)
-        const wallet = balRes.data.data
-        setWalletId(wallet.id)
-        setBalance(Number(wallet.balance).toFixed(2))
+        // Fetch Wallet Summary which includes totalSent and totalReceived
+        const summaryRes = await api.get(`/wallets/user/${user.userId}/summary`)
+        const summary = summaryRes.data.data
+        setWalletId(summary.wallet.id)
+        setBalance(Number(summary.wallet.balance).toFixed(2))
 
-        const txRes = await api.get(`/transactions/${wallet.id}`)
+        const txRes = await api.get(`/transactions/${summary.wallet.id}`)
         const txs = txRes.data.data || []
-        
-        let sent = 0
-        let received = 0
         
         // Simple aggregation for the chart based on last 7 transactions
         const recentTxs = [...txs].reverse().slice(0, 7)
@@ -39,14 +37,9 @@ export default function Dashboard() {
           mockData.push({ name: 'Day 1', amount: 0 }, { name: 'Day 2', amount: 0 })
         }
 
-        txs.forEach(tx => {
-          if (tx.entryType === 'DEBIT') sent += Number(tx.amount)
-          if (tx.entryType === 'CREDIT') received += Number(tx.amount)
-        })
-
         setStats({
-          totalSent: sent.toFixed(2),
-          totalReceived: received.toFixed(2),
+          totalSent: Number(summary.totalSent).toFixed(2),
+          totalReceived: Number(summary.totalReceived).toFixed(2),
           txCount: txs.length
         })
         setChartData(mockData)

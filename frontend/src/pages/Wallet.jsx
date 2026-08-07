@@ -36,13 +36,13 @@ export default function Wallet() {
 
         <div style={{ marginTop: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div className="stat-card" style={{ background: 'rgba(255,255,255,0.08)' }}>
-            <span className="stat-card__label" style={{ color: 'rgba(255,255,255,0.7)' }}>Owner</span>
-            <span className="stat-card__value">{wallet?.ownerName || 'Mansi'}</span>
+            <span className="stat-card__label" style={{ color: '#9ca3af' }}>Owner</span>
+            <span className="stat-card__value" style={{ color: '#ffffff' }}>{wallet?.ownerName || 'Mansi'}</span>
           </div>
 
           <div className="stat-card" style={{ background: 'rgba(255,255,255,0.08)' }}>
-            <span className="stat-card__label" style={{ color: 'rgba(255,255,255,0.7)' }}>Currency</span>
-            <span className="stat-card__value">INR</span>
+            <span className="stat-card__label" style={{ color: '#9ca3af' }}>Currency</span>
+            <span className="stat-card__value" style={{ color: '#ffffff' }}>INR</span>
           </div>
         </div>
       </div>

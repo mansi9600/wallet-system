@@ -68,6 +68,18 @@ public class WalletController {
         );
     }
 
+    // Get wallet summary (including total received and total sent) by userId
+    @GetMapping("/user/{userId}/summary")
+    public ApiResponse<com.mansi.wallet_system.dto.WalletSummaryDTO> getWalletSummaryByUserId(@PathVariable Long userId) {
+        com.mansi.wallet_system.dto.WalletSummaryDTO summary = walletService.getWalletSummaryByUserId(userId);
+
+        return new ApiResponse<>(
+                true,
+                "Wallet summary fetched successfully",
+                summary
+        );
+    }
+
     // Transfer money
     @PostMapping("/transfer")
     public ApiResponse<Transaction> transferMoney(
