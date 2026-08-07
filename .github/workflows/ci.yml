@@ -3,9 +3,9 @@ name: Wallet System CI
 on:
   push:
     branches:
+      - feature/jwt-authentication
       - main
       - master
-      - feature/jwt-authentication
   pull_request:
     branches:
       - main
@@ -20,22 +20,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: '25'
 
       - name: Build backend
-        run: mvn clean verify -DskipTests
+        run: ./mvnw clean package -DskipTests
 
   frontend:
     name: Frontend Build
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout code
@@ -44,10 +40,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
         run: npm install
 
       - name: Build frontend
+        working-directory: frontend
         run: npm run build
