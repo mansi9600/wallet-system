@@ -1,106 +1,134 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axiosInstance'
+import { useAuth } from '../context/AuthContext'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import '../styles/dashboard.css'
 
 export default function Dashboard() {
-  const [wallet, setWallet] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+  const [balance, setBalance] = useState('0.00')
+  const [walletId, setWalletId] = useState(null)
+  const [stats, setStats] = useState({ totalSent: '0.00', totalReceived: '0.00', txCount: 0 })
+  const [chartData, setChartData] = useState([])
 
   useEffect(() => {
-    async function load() {
+    async function fetchData() {
       try {
-        const res = await api.get('/wallets')
-        const wallets = res.data?.data || []
-        setWallet(wallets[wallets.length - 1])
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoading(false)
+        if (!user || !user.userId) return;
+        const balRes = await api.get(`/wallets/user/${user.userId}`)
+        const wallet = balRes.data.data
+        setWalletId(wallet.id)
+        setBalance(Number(wallet.balance).toFixed(2))
+
+        const txRes = await api.get(`/transactions/${wallet.id}`)
+        const txs = txRes.data.data || []
+        
+        let sent = 0
+        let received = 0
+        
+        // Simple aggregation for the chart based on last 7 transactions
+        const recentTxs = [...txs].reverse().slice(0, 7)
+        const mockData = recentTxs.map((tx, idx) => ({
+          name: `Tx ${idx + 1}`,
+          amount: Number(tx.amount)
+        }))
+
+        // If no data, provide an empty flatline
+        if (mockData.length === 0) {
+          mockData.push({ name: 'Day 1', amount: 0 }, { name: 'Day 2', amount: 0 })
+        }
+
+        txs.forEach(tx => {
+          if (tx.entryType === 'DEBIT') sent += Number(tx.amount)
+          if (tx.entryType === 'CREDIT') received += Number(tx.amount)
+        })
+
+        setStats({
+          totalSent: sent.toFixed(2),
+          totalReceived: received.toFixed(2),
+          txCount: txs.length
+        })
+        setChartData(mockData)
+
+      } catch (err) {
+        console.error("Failed to load dashboard data", err)
       }
     }
-
-    load()
-  }, [])
+    fetchData()
+  }, [user])
 
   return (
     <div className="dashboard-shell">
       <div className="dashboard-hero">
         <div>
-          <h1 className="dashboard-title">Welcome back, Mansi 👋</h1>
-          <p className="dashboard-subtitle">
-            Monitor balances, transfer funds, and track transactions in real time.
-          </p>
+          <h1 className="dashboard-title">Welcome back, {user?.name?.split(' ')[0]}</h1>
+          <p className="dashboard-subtitle">Here's what's happening with your money today.</p>
         </div>
       </div>
 
       <div className="dashboard-grid">
         <div className="balance-card">
           <div className="balance-card__label">Available Balance</div>
-
-          <div className="balance-card__amount">
-            {loading
-              ? 'Loading...'
-              : `₹${Number(wallet?.balance || 0).toLocaleString('en-IN')}`}
-          </div>
-
+          <div className="balance-card__amount">₹{Number(balance).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           <div className="balance-card__meta">
-            <span className="wallet-chip wallet-chip--active">ACTIVE</span>
-            <span className="wallet-chip">Wallet ID #{wallet?.id}</span>
+            <span className="wallet-chip wallet-chip--active">Active Wallet</span>
+            <span className="wallet-chip">ID: #{walletId}</span>
+            <span className="wallet-chip">INR</span>
           </div>
-
           <div className="balance-card__actions">
-            <Link to="/transfer" className="dashboard-btn dashboard-btn--primary">
-              Send Money
+            <Link to="/deposit" className="dashboard-btn dashboard-btn--primary">
+              + Add Money
             </Link>
-
+            <Link to="/transfer" className="dashboard-btn dashboard-btn--secondary">
+              Send
+            </Link>
             <Link to="/history" className="dashboard-btn dashboard-btn--secondary">
-              View History
+              History
             </Link>
           </div>
         </div>
 
         <div className="stats-panel">
           <div className="stat-card">
-            <span className="stat-card__label">This Month</span>
-            <span className="stat-card__value stat-card__value--positive">+12%</span>
+            <div className="stat-card__label">Total Received</div>
+            <div className="stat-card__value text-success">+₹{Number(stats.totalReceived).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="stat-card__sub">All time</div>
           </div>
-
           <div className="stat-card">
-            <span className="stat-card__label">Credits</span>
-            <span className="stat-card__value">₹12,500</span>
-          </div>
-
-          <div className="stat-card">
-            <span className="stat-card__label">Debits</span>
-            <span className="stat-card__value">₹6,850</span>
-          </div>
-
-          <div className="stat-card">
-            <span className="stat-card__label">Net Flow</span>
-            <span className="stat-card__value">₹5,650</span>
+            <div className="stat-card__label">Total Sent</div>
+            <div className="stat-card__value text-danger">-₹{Number(stats.totalSent).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="stat-card__sub">All time</div>
           </div>
         </div>
       </div>
 
-      <div className="feature-grid">
-        <Link to="/transfer" className="feature-card">
-          <div className="feature-card__icon">💸</div>
-          <h3>Transfer Money</h3>
-          <p>Instantly send money to another wallet.</p>
-        </Link>
-
-        <Link to="/history" className="feature-card">
-          <div className="feature-card__icon">📜</div>
-          <h3>Transaction History</h3>
-          <p>Review all credits and debits.</p>
-        </Link>
-
-        <Link to="/wallet" className="feature-card">
-          <div className="feature-card__icon">🔒</div>
-          <h3>Security</h3>
-          <p>JWT authentication and protected APIs enabled.</p>
-        </Link>
+      {/* Recharts Data Visualization */}
+      <div className="card" style={{ marginBottom: '40px' }}>
+        <div className="card-header">
+          <h2>Recent Activity Flow</h2>
+        </div>
+        <div style={{ height: '300px', padding: '20px' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fill: 'var(--text-muted)'}} dx={-10} />
+              <Tooltip 
+                contentStyle={{ borderRadius: '8px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-md)' }}
+              />
+              <Area type="monotone" dataKey="amount" stroke="var(--primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
+
     </div>
   )
 }

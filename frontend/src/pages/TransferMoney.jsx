@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import api from '../api/axiosInstance'
 import '../styles/dashboard.css'
 export default function TransferMoney() {
@@ -6,6 +7,7 @@ export default function TransferMoney() {
   const [amount, setAmount] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -13,10 +15,14 @@ export default function TransferMoney() {
     setMessage('')
 
     try {
+      if (!user || !user.userId) return;
+      const balRes = await api.get(`/wallets/user/${user.userId}`)
+      const senderWalletId = balRes.data.data.id
+
       await api.post(
-        '/transactions/transfer',
+        '/wallets/transfer',
         {
-          senderWalletId: 5,
+          senderWalletId: senderWalletId,
           receiverWalletId: Number(receiverWalletId),
           amount: Number(amount),
         },

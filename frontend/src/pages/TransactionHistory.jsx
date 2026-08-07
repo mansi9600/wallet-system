@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import api from '../api/axiosInstance'
 import '../styles/dashboard.css'
 export default function TransactionHistory() {
   const [entries, setEntries] = useState([])
+  const { user } = useAuth()
 
   useEffect(() => {
     async function loadTransactions() {
       try {
-        const res = await api.get('/transactions?page=0&size=10&sort=id,desc')
+        if (!user || !user.userId) return;
+        const balRes = await api.get(`/wallets/user/${user.userId}`)
+        const walletId = balRes.data.data.id
+
+        const res = await api.get(`/transactions/${walletId}`)
 
         const transactions =
           res.data?.data?.content ||
@@ -22,7 +28,7 @@ export default function TransactionHistory() {
     }
 
     loadTransactions()
-  }, [])
+  }, [user])
 
   return (
     <div className="dashboard-shell">

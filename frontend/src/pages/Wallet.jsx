@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 import api from '../api/axiosInstance'
 
 export default function Wallet() {
   const [wallet, setWallet] = useState(null)
+  const { user } = useAuth()
 
   useEffect(() => {
     async function loadWallet() {
       try {
-        const res = await api.get('/wallets')
-        const wallets = res.data?.data || []
-        setWallet(wallets[wallets.length - 1])
+        if (!user || !user.userId) return;
+        const res = await api.get(`/wallets/user/${user.userId}`)
+        setWallet(res.data?.data)
       } catch (e) {
         console.error(e)
       }
     }
 
     loadWallet()
-  }, [])
+  }, [user])
 
   return (
     <div className="dashboard-shell">
