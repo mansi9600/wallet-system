@@ -54,15 +54,17 @@ wallet-system/
 │   │   └── styles/       # CSS Design System
 │   └── package.json
 │
-├── src/                  # Spring Boot Backend
-│   └── main/java/com/mansi/wallet_system/
-│       ├── controller/   # REST Endpoints
-│       ├── service/      # Business Logic (Ledger, Transfers)
-│       ├── repository/   # JPA Repositories
-│       ├── entity/       # Database Models
-│       └── security/     # JWT Filters & Config
+├── backend/              # Spring Boot Backend
+│   ├── src/
+│   │   └── main/java/com/mansi/wallet_system/
+│   │       ├── controller/   # REST Endpoints
+│   │       ├── service/      # Business Logic (Ledger, Transfers)
+│   │       ├── repository/   # JPA Repositories
+│   │       ├── entity/       # Database Models
+│   │       └── security/     # JWT Filters & Config
+│   ├── pom.xml           # Maven Dependencies
+│   └── Dockerfile        # Backend Container
 │
-├── pom.xml               # Maven Dependencies
 └── docker-compose.yml    # Infrastructure
 ```
 
@@ -78,8 +80,9 @@ docker compose up -d postgres
 ```
 
 ### 2. Start the Backend (Spring Boot)
-Open a terminal in the root directory:
+Open a terminal in the root directory, then navigate to the backend:
 ```bash
+cd backend
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
