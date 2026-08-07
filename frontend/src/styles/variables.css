@@ -1,24 +1,24 @@
 :root {
   /* Brand */
-  --primary: #0d9488;
-  --primary-hover: #0f766e;
-  --primary-light: #ccfbf1;
-  --primary-dark: #134e4a;
+  --primary: #2563eb;       /* Professional Indigo/Blue */
+  --primary-hover: #1d4ed8;
+  --primary-light: #eff6ff;
+  --primary-dark: #1e40af;
 
-  /* Surfaces */
-  --background: #f4f6f7;
-  --surface: #ffffff;
-  --surface-muted: #f8fafa;
+  /* Surfaces (Professional Light Theme) */
+  --background: #f8fafc;    /* Very soft off-white/gray */
+  --surface: #ffffff;       /* Pure white for cards */
+  --surface-muted: #f1f5f9; /* Subtle gray for table headers, neutral backgrounds */
 
   /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
+  --text-primary: #0f172a;  /* High contrast charcoal */
+  --text-secondary: #475569; /* Slate gray for secondary text */
+  --text-muted: #94a3b8;    /* Lighter gray for hints/placeholders */
   --text-on-primary: #ffffff;
 
   /* Borders */
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
+  --border: #e2e8f0;        /* Very subtle line */
+  --border-strong: #cbd5e1; /* For inputs and stronger delineations */
 
   /* Status */
   --success: #059669;
@@ -37,16 +37,19 @@
   --info-bg: #eff6ff;
   --info-border: #bfdbfe;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
+  /* Shadows (Stripe-style diffuse shadows) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.025);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.08);
 
   /* Radius */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-full: 999px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
 
   /* Spacing scale */
   --space-1: 4px;
@@ -63,5 +66,5 @@
 
   /* Motion */
   --transition-fast: 150ms ease;
-  --transition-base: 200ms ease;
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }

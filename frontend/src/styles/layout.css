@@ -1,0 +1,29 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.layout-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Important for flex children to not overflow */
+}
+
+.layout-main {
+  flex-grow: 1;
+  padding: 32px 40px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: column;
+  }
+  .layout-main {
+    padding: 24px 16px;
+  }
+}

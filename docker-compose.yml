@@ -19,7 +19,7 @@ services:
       - "6379:6379"
 
   app:
-    build: .
+    build: ./backend
     container_name: wallet-app
     ports:
       - "8082:8082"
